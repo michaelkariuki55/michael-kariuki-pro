@@ -73,16 +73,12 @@ const HeroSection = () => {
               className="flex gap-8 pt-8 border-t border-border"
             >
               <div>
-                <p className="font-display text-3xl font-semibold text-foreground">3+</p>
-                <p className="text-sm text-muted-foreground">Years Experience</p>
+                <p className="font-display text-3xl font-semibold text-foreground">1</p>
+                <p className="text-sm text-muted-foreground">Year Experience</p>
               </div>
               <div>
-                <p className="font-display text-3xl font-semibold text-foreground">20+</p>
-                <p className="text-sm text-muted-foreground">Projects Completed</p>
-              </div>
-              <div>
-                <p className="font-display text-3xl font-semibold text-foreground">15+</p>
-                <p className="text-sm text-muted-foreground">Happy Clients</p>
+                <p className="font-display text-3xl font-semibold text-foreground">1</p>
+                <p className="text-sm text-muted-foreground">Project & Growing</p>
               </div>
             </motion.div>
           </div>
