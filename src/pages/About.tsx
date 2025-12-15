@@ -29,14 +29,8 @@ const experience = [
   {
     role: "Freelance Web Developer",
     company: "Self-Employed",
-    period: "2021 - Present",
-    description: "Building custom websites and web applications for clients across various industries.",
-  },
-  {
-    role: "Front-End Developer",
-    company: "Creative Agency",
-    period: "2020 - 2021",
-    description: "Developed responsive websites and landing pages for agency clients.",
+    period: "2024 - Present",
+    description: "Building custom websites and web applications for clients, focusing on clean code and responsive design.",
   },
 ];
 
@@ -94,8 +88,8 @@ const About = () => {
                   />
                 </div>
                 <div className="absolute -bottom-6 -left-6 p-4 bg-card rounded-xl shadow-custom-lg border border-border">
-                  <p className="font-display text-2xl font-semibold text-foreground">3+</p>
-                  <p className="text-sm text-muted-foreground">Years of Experience</p>
+                  <p className="font-display text-2xl font-semibold text-foreground">1</p>
+                  <p className="text-sm text-muted-foreground">Year of Experience</p>
                 </div>
               </motion.div>
             </div>
