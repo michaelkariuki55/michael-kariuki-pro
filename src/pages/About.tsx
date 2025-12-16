@@ -1,10 +1,11 @@
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Download, MapPin, Briefcase, GraduationCap } from "lucide-react";
+import { Download, MapPin, Briefcase } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import SectionHeading from "@/components/ui/SectionHeading";
 import CTASection from "@/components/home/CTASection";
+import profileImage from "@/assets/michael-profile.jpg";
 
 const skills = [
   {
@@ -80,9 +81,9 @@ const About = () => {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="relative"
               >
-                <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-secondary">
+                <div className="w-64 h-64 md:w-80 md:h-80 mx-auto rounded-full overflow-hidden border-4 border-accent shadow-custom-xl bg-secondary">
                   <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80"
+                    src={profileImage}
                     alt="Michael Kariuki"
                     className="w-full h-full object-cover"
                   />
