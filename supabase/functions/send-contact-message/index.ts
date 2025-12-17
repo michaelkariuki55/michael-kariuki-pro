@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
@@ -10,11 +11,22 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface ContactRequest {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
+// Input validation schema
+const ContactSchema = z.object({
+  name: z.string().min(2, "Name too short").max(100, "Name too long").trim(),
+  email: z.string().email("Invalid email").max(255).toLowerCase().trim(),
+  subject: z.string().min(3, "Subject too short").max(200, "Subject too long").trim(),
+  message: z.string().min(10, "Message too short").max(5000, "Message too long").trim(),
+});
+
+// HTML escaping function to prevent XSS
+function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 serve(async (req: Request): Promise<Response> => {
@@ -23,7 +35,19 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, subject, message }: ContactRequest = await req.json();
+    const body = await req.json();
+
+    // Validate input
+    const parseResult = ContactSchema.safeParse(body);
+    if (!parseResult.success) {
+      console.error("Validation error:", parseResult.error.errors);
+      return new Response(
+        JSON.stringify({ error: "Invalid input", details: parseResult.error.errors }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const { name, email, subject, message } = parseResult.data;
 
     console.log("Received contact form submission:", { name, email, subject });
 
@@ -37,12 +61,11 @@ serve(async (req: Request): Promise<Response> => {
 
     if (dbError) {
       console.error("Error saving to database:", dbError);
-      // Continue with email even if DB save fails
     } else {
       console.log("Message saved to database");
     }
 
-    // Send email via Resend
+    // Send email via Resend with escaped HTML
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -52,15 +75,15 @@ serve(async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "Contact Form <onboarding@resend.dev>",
         to: ["michaelkariuki281@gmail.com"],
-        subject: `New Contact: ${subject}`,
+        subject: `New Contact: ${escapeHtml(subject)}`,
         html: `
           <h2>New Contact Form Submission</h2>
-          <p><strong>From:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>From:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
           <hr />
           <h3>Message:</h3>
-          <p>${message.replace(/\n/g, '<br>')}</p>
+          <p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>
         `,
         reply_to: email,
       }),
