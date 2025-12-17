@@ -1,28 +1,27 @@
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
+import { Sparkles, Rocket, MessageCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { Button } from "@/components/ui/button";
 
-const testimonials = [
+const features = [
   {
     id: 1,
-    content: "Michael delivered our website on time and exceeded our expectations. His attention to detail and clean code made the handoff seamless.",
-    author: "Sarah Johnson",
-    role: "CEO, TechStart Inc.",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
+    icon: Sparkles,
+    title: "Quality Work",
+    description: "I'm committed to delivering clean, well-structured code and pixel-perfect designs for every project.",
   },
   {
     id: 2,
-    content: "Working with Michael was a pleasure. He understood our vision perfectly and created a website that truly represents our brand.",
-    author: "David Chen",
-    role: "Founder, Design Studio",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
+    icon: Rocket,
+    title: "Fast Turnaround",
+    description: "I understand the importance of deadlines and work efficiently to deliver your project on time.",
   },
   {
     id: 3,
-    content: "The website Michael built for us has significantly improved our online presence. Professional, responsive, and user-friendly.",
-    author: "Emily Williams",
-    role: "Marketing Director",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80",
+    icon: MessageCircle,
+    title: "Clear Communication",
+    description: "I keep you updated throughout the process and ensure your vision is brought to life.",
   },
 ];
 
@@ -31,40 +30,47 @@ const Testimonials = () => {
     <section className="section-padding bg-background">
       <div className="container-custom">
         <SectionHeading
-          label="Testimonials"
-          title="What Clients Say"
-          description="Feedback from clients I've had the pleasure of working with."
+          label="Why Work With Me"
+          title="Your First Project Could Be Here"
+          description="I'm excited to start my journey and build amazing websites for clients like you."
           centered
         />
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
+          {features.map((feature, index) => (
             <motion.div
-              key={testimonial.id}
+              key={feature.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative p-8 bg-card rounded-xl border border-border"
+              className="relative p-8 bg-card rounded-xl border border-border text-center"
             >
-              <Quote className="w-10 h-10 text-accent/20 absolute top-6 right-6" />
-              <p className="text-muted-foreground mb-6 relative z-10">
-                "{testimonial.content}"
-              </p>
-              <div className="flex items-center gap-4">
-                <img
-                  src={testimonial.avatar}
-                  alt={testimonial.author}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <p className="font-semibold text-foreground">{testimonial.author}</p>
-                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                </div>
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
+                <feature.icon className="w-7 h-7 text-accent" />
               </div>
+              <h3 className="font-semibold text-foreground text-lg mb-2">{feature.title}</h3>
+              <p className="text-muted-foreground text-sm">
+                {feature.description}
+              </p>
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-center"
+        >
+          <p className="text-muted-foreground mb-6">
+            Ready to be my first client? Let's create something great together!
+          </p>
+          <Button asChild size="lg">
+            <Link to="/contact">Get in Touch</Link>
+          </Button>
+        </motion.div>
       </div>
     </section>
   );
