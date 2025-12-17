@@ -122,9 +122,11 @@ const About = () => {
                   reliable solutions for clients and businesses.
                 </p>
               </motion.div>
-              <Button variant="outline" size="lg">
-                <Download className="mr-2 w-4 h-4" />
-                Download CV
+              <Button variant="outline" size="lg" asChild>
+                <a href="/cv.pdf" download="Michael-Kariuki-CV.pdf">
+                  <Download className="mr-2 w-4 h-4" />
+                  Download CV
+                </a>
               </Button>
             </div>
           </div>
