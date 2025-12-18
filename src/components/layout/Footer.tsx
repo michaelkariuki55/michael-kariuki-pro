@@ -7,7 +7,7 @@ const Footer = () => {
   const socialLinks = [
     { icon: Github, href: "#", label: "GitHub" },
     { icon: Linkedin, href: "https://www.linkedin.com/in/michael-kariuki", label: "LinkedIn" },
-    { icon: Facebook, href: "#", label: "Facebook" },
+    { icon: Facebook, href: "https://www.facebook.com/unk.wn.ne.ke?mibextid=rS40aB7S9Ucbxw6v", label: "Facebook" },
     { icon: Mail, href: "mailto:hello@michaelkariuki.com", label: "Email" },
   ];
 
