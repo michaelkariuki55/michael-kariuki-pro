@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter, MessageCircle } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -17,8 +17,15 @@ const Contact = () => {
     email: "",
     subject: "",
     message: "",
+    honeypot: "", // Hidden field for bot detection
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formLoadTime, setFormLoadTime] = useState<number>(Date.now());
+
+  // Reset form load time when component mounts
+  useEffect(() => {
+    setFormLoadTime(Date.now());
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -68,7 +75,11 @@ const Contact = () => {
 
     try {
       const { error } = await supabase.functions.invoke("send-contact-message", {
-        body: trimmed,
+        body: {
+          ...trimmed,
+          honeypot: formData.honeypot,
+          submissionTime: formLoadTime,
+        },
       });
 
       if (error) throw error;
@@ -78,7 +89,8 @@ const Contact = () => {
         description: "Thank you for reaching out. I'll get back to you soon.",
       });
 
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", subject: "", message: "", honeypot: "" });
+      setFormLoadTime(Date.now()); // Reset form load time after successful submit
     } catch (error: any) {
       console.error("Error sending message:", error);
       toast({
@@ -230,11 +242,23 @@ const Contact = () => {
               >
                 <form
                   onSubmit={handleSubmit}
-                  className="p-8 md:p-10 bg-card rounded-2xl border border-border"
+                  className="relative p-8 md:p-10 bg-card rounded-2xl border border-border"
                 >
                   <h3 className="font-display text-xl font-semibold text-foreground mb-6">
                     Send a Message
                   </h3>
+
+                  {/* Hidden honeypot field - bots will fill this */}
+                  <div className="absolute -left-[9999px]" aria-hidden="true">
+                    <Input
+                      type="text"
+                      name="honeypot"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={formData.honeypot}
+                      onChange={handleChange}
+                    />
+                  </div>
 
                   <div className="grid sm:grid-cols-2 gap-6 mb-6">
                     <div className="space-y-2">

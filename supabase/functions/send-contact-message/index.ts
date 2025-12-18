@@ -17,6 +17,9 @@ const ContactSchema = z.object({
   email: z.string().email("Invalid email").max(255).toLowerCase().trim(),
   subject: z.string().min(3, "Subject too short").max(200, "Subject too long").trim(),
   message: z.string().min(10, "Message too short").max(5000, "Message too long").trim(),
+  // Bot protection fields
+  honeypot: z.string().optional(), // Hidden field - should be empty
+  submissionTime: z.number().optional(), // Timestamp when form was loaded
 });
 
 // HTML escaping function to prevent XSS
@@ -42,14 +45,36 @@ serve(async (req: Request): Promise<Response> => {
     if (!parseResult.success) {
       console.error("Validation error:", parseResult.error.errors);
       return new Response(
-        JSON.stringify({ error: "Invalid input", details: parseResult.error.errors }),
+        JSON.stringify({ error: "Invalid input. Please check your form data." }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    const { name, email, subject, message } = parseResult.data;
+    const { name, email, subject, message, honeypot, submissionTime } = parseResult.data;
 
-    console.log("Received contact form submission:", { name, email, subject });
+    // Bot protection: Check honeypot field (should be empty)
+    if (honeypot) {
+      console.log("Bot detected: honeypot field filled");
+      // Return fake success to confuse bots
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Bot protection: Check submission time (form should take at least 3 seconds to fill)
+    if (submissionTime) {
+      const timeDiff = Date.now() - submissionTime;
+      if (timeDiff < 3000) {
+        console.log("Bot detected: form submitted too quickly", { timeDiff });
+        return new Response(
+          JSON.stringify({ error: "Please take your time filling the form." }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+    }
+
+    console.log("Received contact form submission from:", email);
 
     // Initialize Supabase client with service role key
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
@@ -60,7 +85,11 @@ serve(async (req: Request): Promise<Response> => {
       .insert({ name, email, subject, message });
 
     if (dbError) {
-      console.error("Error saving to database:", dbError);
+      console.error("Error saving to database:", {
+        error: dbError.message,
+        code: dbError.code,
+        timestamp: new Date().toISOString()
+      });
     } else {
       console.log("Message saved to database");
     }
@@ -90,10 +119,15 @@ serve(async (req: Request): Promise<Response> => {
     });
 
     const data = await res.json();
-    console.log("Email response:", data);
+    console.log("Email API response status:", res.status);
 
     if (!res.ok) {
-      throw new Error(data.message || "Failed to send email");
+      console.error("Email API error:", {
+        status: res.status,
+        message: data.message,
+        timestamp: new Date().toISOString()
+      });
+      throw new Error("Email service error");
     }
 
     return new Response(JSON.stringify({ success: true }), {
@@ -101,9 +135,16 @@ serve(async (req: Request): Promise<Response> => {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error: any) {
-    console.error("Error sending email:", error);
+    // Log full error details server-side for debugging
+    console.error("Error sending contact message:", {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Return generic error to client - never expose internal details
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Failed to send message. Please try again later." }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
