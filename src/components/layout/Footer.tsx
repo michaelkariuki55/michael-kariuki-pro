@@ -8,7 +8,7 @@ const Footer = () => {
     { icon: Github, href: "#", label: "GitHub" },
     { icon: Linkedin, href: "https://www.linkedin.com/in/michael-kariuki", label: "LinkedIn" },
     { icon: Facebook, href: "https://www.facebook.com/unk.wn.ne.ke?mibextid=rS40aB7S9Ucbxw6v", label: "Facebook" },
-    { icon: Mail, href: "mailto:hello@michaelkariuki.com", label: "Email" },
+    { icon: Mail, href: "mailto:michaelkariuki281@gmail.com", label: "Email" },
   ];
 
   const footerLinks = [
@@ -60,7 +60,7 @@ const Footer = () => {
               Connect
             </h4>
             <p className="text-sm text-primary-foreground/70 mb-4">
-              hello@michaelkariuki.com
+              michaelkariuki281@gmail.com
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social) => {
