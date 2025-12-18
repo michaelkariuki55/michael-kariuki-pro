@@ -5,6 +5,7 @@ import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const RECAPTCHA_SECRET_KEY = Deno.env.get("RECAPTCHA_SECRET_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,9 +19,29 @@ const ContactSchema = z.object({
   subject: z.string().min(3, "Subject too short").max(200, "Subject too long").trim(),
   message: z.string().min(10, "Message too short").max(5000, "Message too long").trim(),
   // Bot protection fields
-  honeypot: z.string().optional(), // Hidden field - should be empty
-  submissionTime: z.number().optional(), // Timestamp when form was loaded
+  honeypot: z.string().optional(),
+  submissionTime: z.number().optional(),
+  recaptchaToken: z.string().optional(),
 });
+
+// Verify reCAPTCHA token
+async function verifyRecaptcha(token: string): Promise<{ success: boolean; score: number }> {
+  try {
+    const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `secret=${RECAPTCHA_SECRET_KEY}&response=${token}`,
+    });
+    
+    const data = await response.json();
+    console.log("reCAPTCHA verification result:", { success: data.success, score: data.score, action: data.action });
+    
+    return { success: data.success, score: data.score || 0 };
+  } catch (error) {
+    console.error("reCAPTCHA verification error:", error);
+    return { success: false, score: 0 };
+  }
+}
 
 // HTML escaping function to prevent XSS
 function escapeHtml(unsafe: string): string {
@@ -50,12 +71,11 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    const { name, email, subject, message, honeypot, submissionTime } = parseResult.data;
+    const { name, email, subject, message, honeypot, submissionTime, recaptchaToken } = parseResult.data;
 
     // Bot protection: Check honeypot field (should be empty)
     if (honeypot) {
       console.log("Bot detected: honeypot field filled");
-      // Return fake success to confuse bots
       return new Response(JSON.stringify({ success: true }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -69,6 +89,28 @@ serve(async (req: Request): Promise<Response> => {
         console.log("Bot detected: form submitted too quickly", { timeDiff });
         return new Response(
           JSON.stringify({ error: "Please take your time filling the form." }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+    }
+
+    // Bot protection: Verify reCAPTCHA token
+    if (recaptchaToken && RECAPTCHA_SECRET_KEY) {
+      const recaptchaResult = await verifyRecaptcha(recaptchaToken);
+      
+      if (!recaptchaResult.success) {
+        console.log("Bot detected: reCAPTCHA verification failed");
+        return new Response(
+          JSON.stringify({ error: "Security verification failed. Please try again." }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      // Score threshold: 0.5 is Google's recommended threshold (0.0 = bot, 1.0 = human)
+      if (recaptchaResult.score < 0.5) {
+        console.log("Bot detected: low reCAPTCHA score", { score: recaptchaResult.score });
+        return new Response(
+          JSON.stringify({ error: "Security verification failed. Please try again." }),
           { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }

@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter, MessageCircle } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -10,6 +10,18 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+// Replace with your reCAPTCHA v3 site key
+const RECAPTCHA_SITE_KEY = "YOUR_RECAPTCHA_SITE_KEY";
+
+declare global {
+  interface Window {
+    grecaptcha: {
+      ready: (callback: () => void) => void;
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+    };
+  }
+}
+
 const Contact = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -17,15 +29,43 @@ const Contact = () => {
     email: "",
     subject: "",
     message: "",
-    honeypot: "", // Hidden field for bot detection
+    honeypot: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formLoadTime, setFormLoadTime] = useState<number>(Date.now());
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
 
-  // Reset form load time when component mounts
+  // Load reCAPTCHA script
   useEffect(() => {
     setFormLoadTime(Date.now());
+    
+    if (document.querySelector(`script[src*="recaptcha"]`)) {
+      setRecaptchaLoaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.onload = () => setRecaptchaLoaded(true);
+    document.head.appendChild(script);
   }, []);
+
+  const getRecaptchaToken = useCallback(async (): Promise<string | null> => {
+    if (!recaptchaLoaded || !window.grecaptcha) return null;
+    
+    return new Promise((resolve) => {
+      window.grecaptcha.ready(async () => {
+        try {
+          const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "contact_form" });
+          resolve(token);
+        } catch (error) {
+          console.error("reCAPTCHA error:", error);
+          resolve(null);
+        }
+      });
+    });
+  }, [recaptchaLoaded]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -74,11 +114,15 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
+      // Get reCAPTCHA token
+      const recaptchaToken = await getRecaptchaToken();
+      
       const { error } = await supabase.functions.invoke("send-contact-message", {
         body: {
           ...trimmed,
           honeypot: formData.honeypot,
           submissionTime: formLoadTime,
+          recaptchaToken,
         },
       });
 
