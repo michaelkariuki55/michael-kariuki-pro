@@ -217,17 +217,33 @@ const Contact = () => {
 
                 <div>
                   <p className="text-sm text-muted-foreground mb-4">Follow me on</p>
-                  <div className="flex gap-4">
-                    {socialLinks.map((social) => (
-                      <a
-                        key={social.label}
-                        href={social.href}
-                        aria-label={social.label}
-                        className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
-                      >
-                        <social.icon className="w-5 h-5" />
-                      </a>
-                    ))}
+                  {/* Glassmorphic Social Card */}
+                  <div className="max-w-fit rounded-2xl flex flex-col items-center justify-center gap-4 backdrop-blur-md bg-white/5 dark:bg-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.192),inset_0_0_5px_rgba(255,255,255,0.274),0_5px_5px_rgba(0,0,0,0.164)] transition-all duration-500 hover:bg-white/10 p-4">
+                    <ul className="flex list-none gap-4 items-center justify-center flex-wrap">
+                      {socialLinks.map((social) => (
+                        <li key={social.label} className="cursor-pointer relative group">
+                          {/* Isometric shadow layers */}
+                          <span className="opacity-0 absolute rounded-full h-[60px] w-[60px] shadow-[inset_0_0_20px_rgba(255,255,255,0.3),inset_0_0_5px_rgba(255,255,255,0.5),0_5px_5px_rgba(0,0,0,0.164)] transition-all duration-300 group-hover:opacity-20" />
+                          <span className="opacity-0 absolute rounded-full h-[60px] w-[60px] shadow-[inset_0_0_20px_rgba(255,255,255,0.3),inset_0_0_5px_rgba(255,255,255,0.5),0_5px_5px_rgba(0,0,0,0.164)] transition-all duration-300 group-hover:opacity-40 group-hover:translate-x-[5px] group-hover:-translate-y-[5px]" />
+                          <span className="opacity-0 absolute rounded-full h-[60px] w-[60px] shadow-[inset_0_0_20px_rgba(255,255,255,0.3),inset_0_0_5px_rgba(255,255,255,0.5),0_5px_5px_rgba(0,0,0,0.164)] transition-all duration-300 group-hover:opacity-60 group-hover:translate-x-[10px] group-hover:-translate-y-[10px]" />
+                          
+                          <a
+                            href={social.href}
+                            aria-label={social.label}
+                            className="block"
+                          >
+                            <div className="relative p-4 h-[60px] w-[60px] rounded-full text-accent fill-current shadow-[inset_0_0_20px_rgba(255,255,255,0.3),inset_0_0_5px_rgba(255,255,255,0.5),0_5px_5px_rgba(0,0,0,0.164)] transition-all duration-300 group-hover:translate-x-[15px] group-hover:-translate-y-[15px] flex items-center justify-center">
+                              <social.icon className="w-6 h-6" />
+                            </div>
+                          </a>
+                          
+                          {/* Tooltip label */}
+                          <span className="opacity-0 rounded-md py-1 px-2 text-accent bg-white/30 dark:bg-white/20 absolute z-50 shadow-[-5px_0_1px_rgba(153,153,153,0.2),-10px_0_1px_rgba(153,153,153,0.2),inset_0_0_20px_rgba(255,255,255,0.3),inset_0_0_5px_rgba(255,255,255,0.5),0_5px_5px_rgba(0,0,0,0.082)] transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-[25px] group-hover:-translate-y-[2px] group-hover:-skew-x-[5deg] text-sm font-medium whitespace-nowrap left-full top-1/2 -translate-y-1/2">
+                            {social.label}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </motion.div>
