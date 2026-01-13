@@ -329,31 +329,37 @@ const Contact = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button
+                    {/* Gradient hover button - Email */}
+                    <button
                       type="submit"
-                      size="lg"
-                      className="flex-1"
                       disabled={isSubmitting}
+                      className="relative overflow-hidden h-12 px-8 rounded-full bg-[#3d3a4e] text-white border-none cursor-pointer flex-1 disabled:opacity-50 disabled:cursor-not-allowed group"
                     >
-                      {isSubmitting ? (
-                        "Sending..."
-                      ) : (
-                        <>
-                          Send via Email
-                          <Send className="ml-2 w-4 h-4" />
-                        </>
-                      )}
-                    </Button>
-                    <Button
+                      <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-[rgba(150,93,233,1)] to-[rgba(99,88,238,1)] transform scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100 group-disabled:scale-x-0" />
+                      <span className="relative z-10 flex items-center justify-center font-medium">
+                        {isSubmitting ? (
+                          "Sending..."
+                        ) : (
+                          <>
+                            Send via Email
+                            <Send className="ml-2 w-4 h-4" />
+                          </>
+                        )}
+                      </span>
+                    </button>
+                    
+                    {/* Gradient hover button - WhatsApp */}
+                    <button
                       type="button"
-                      size="lg"
-                      variant="outline"
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white border-green-600"
                       onClick={handleWhatsApp}
+                      className="relative overflow-hidden h-12 px-8 rounded-full bg-green-600 text-white border-none cursor-pointer flex-1 group"
                     >
-                      <MessageCircle className="mr-2 w-4 h-4" />
-                      Send via WhatsApp
-                    </Button>
+                      <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 transform scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
+                      <span className="relative z-10 flex items-center justify-center font-medium">
+                        <MessageCircle className="mr-2 w-4 h-4" />
+                        Send via WhatsApp
+                      </span>
+                    </button>
                   </div>
                 </form>
               </motion.div>
