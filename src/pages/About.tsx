@@ -122,12 +122,15 @@ const About = () => {
                   reliable solutions for clients and businesses.
                 </p>
               </motion.div>
-              <Button variant="outline" size="lg" asChild>
-                <a href="/cv.pdf" download="Michael-Kariuki-CV.pdf">
-                  <Download className="mr-2 w-4 h-4" />
-                  Download CV
-                </a>
-              </Button>
+              {/* Gradient Download Button */}
+              <a
+                href="/cv.pdf"
+                download="Michael-Kariuki-CV.pdf"
+                className="inline-flex items-center font-medium text-[17px] py-[0.8em] px-[1.5em] pl-[1.2em] text-white bg-gradient-to-t from-[rgba(77,54,208,1)] to-[rgba(132,116,254,1)] border-none rounded-[20em] shadow-[0_0.7em_1.5em_-0.5em_#4d36d0be] tracking-[0.05em] cursor-pointer transition-shadow duration-200 hover:shadow-[0_0.5em_1.5em_-0.5em_#4d36d0be] active:shadow-[0_0.3em_1em_-0.5em_#4d36d0be]"
+              >
+                <Download className="mr-2 w-5 h-5" />
+                Download CV
+              </a>
             </div>
           </div>
         </section>
