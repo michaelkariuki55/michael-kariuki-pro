@@ -55,12 +55,14 @@ const HeroSection = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <Button asChild size="lg" className="group">
-                <Link to="/contact">
-                  Hire Me
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
+              {/* 3D Push Button - Hire Me */}
+              <Link
+                to="/contact"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-3 text-base font-bold text-white bg-[#6c5ce7] rounded-md shadow-[0px_5px_0px_0px_#a29bfe] transition-all duration-100 active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#a29bfe] hover:bg-[#5b4cdb]"
+              >
+                Hire Me
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Link>
               <Button asChild variant="outline" size="lg">
                 <Link to="/projects">View Portfolio</Link>
               </Button>
