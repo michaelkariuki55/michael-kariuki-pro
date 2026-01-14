@@ -57,19 +57,28 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation - Skew hover effect */}
+          <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-medium transition-colors link-underline ${
+                className={`relative inline-block px-4 py-2 rounded-lg border overflow-hidden transition-all duration-500 z-[1] group ${
                   isActive(link.path)
-                    ? "text-accent"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "border-accent text-accent"
+                    : "border-[#03045e] dark:border-accent/50"
                 }`}
               >
-                {link.name}
+                {/* Skew background effects */}
+                <span className="absolute top-0 -left-[10px] w-0 h-full bg-[#240046] dark:bg-accent/80 skew-x-[15deg] transition-all duration-500 -z-[1] group-hover:w-[58%]" />
+                <span className="absolute top-0 -right-[10px] w-0 h-full bg-[#5a189a] dark:bg-accent skew-x-[15deg] transition-all duration-500 -z-[1] group-hover:w-[58%]" />
+                <span className={`text-sm font-medium transition-colors duration-300 ${
+                  isActive(link.path) 
+                    ? "text-accent" 
+                    : "text-[#03045e] dark:text-foreground group-hover:text-[#e0aaff] dark:group-hover:text-white"
+                }`}>
+                  {link.name}
+                </span>
               </Link>
             ))}
           </div>
@@ -87,9 +96,13 @@ const Header = () => {
                 <Moon className="w-5 h-5 text-foreground" />
               )}
             </button>
-            <Button asChild variant="default" size="sm">
-              <Link to="/contact">Hire Me</Link>
-            </Button>
+            {/* 3D Push Button - Hire Me */}
+            <Link
+              to="/contact"
+              className="inline-block px-5 py-2.5 text-sm font-bold text-white bg-[#6c5ce7] rounded-md shadow-[0px_5px_0px_0px_#a29bfe] transition-all duration-100 active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#a29bfe] hover:bg-[#5b4cdb]"
+            >
+              Hire Me
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -143,9 +156,12 @@ const Header = () => {
                   </Link>
                 ))}
                 <div className="px-4 pt-4">
-                  <Button asChild className="w-full" size="sm">
-                    <Link to="/contact">Hire Me</Link>
-                  </Button>
+                  <Link
+                    to="/contact"
+                    className="block w-full text-center px-5 py-2.5 text-sm font-bold text-white bg-[#6c5ce7] rounded-md shadow-[0px_5px_0px_0px_#a29bfe] transition-all duration-100 active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#a29bfe]"
+                  >
+                    Hire Me
+                  </Link>
                 </div>
               </div>
             </motion.div>
