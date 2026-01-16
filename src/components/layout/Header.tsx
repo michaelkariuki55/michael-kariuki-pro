@@ -99,7 +99,7 @@ const Header = () => {
             {/* 3D Push Button - Hire Me */}
             <Link
               to="/contact"
-              className="inline-block px-5 py-2.5 text-sm font-bold text-white bg-purple-600 rounded-md shadow-[0px_5px_0px_0px_#a855f7] transition-all duration-100 active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#a855f7] hover:bg-purple-500"
+              className="inline-block px-5 py-2.5 text-sm font-bold text-white bg-purple-600 rounded-md shadow-[0px_5px_0px_0px_#a855f7] transition-all duration-100 active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#a855f7] hover:bg-purple-500 animate-[pulse-glow_2s_ease-in-out_infinite]"
             >
               Hire Me
             </Link>
