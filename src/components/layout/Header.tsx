@@ -52,7 +52,7 @@ const Header = () => {
         <nav className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <span className="font-display text-2xl font-semibold text-white">
+            <span className="font-display text-2xl font-semibold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
               Michael<span className="text-purple-400">.</span>
             </span>
           </Link>
